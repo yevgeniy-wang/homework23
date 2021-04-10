@@ -60,12 +60,7 @@ class LabelController
             $query->whereIn('label_project.project_id', $request->get('projects'));
         }
 
-
-        if ($query->get()->isEmpty()) {
-            throw new Exception('No such Labels');
-        }
-
-        return LabelResource::collection($query->get());
+        return LabelResource::collection($query->distinct()->get());
     }
 
     public function destroy(Request $request)

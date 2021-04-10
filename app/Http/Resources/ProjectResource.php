@@ -16,7 +16,7 @@ class ProjectResource extends JsonResource
      */
     public function toArray($request)
     {
-        $labels = $this->labels()->pluck('name');
+        $labels = $this->labels()->distinct()->pluck('name');
 
         return [
             'id'     => $this->id,

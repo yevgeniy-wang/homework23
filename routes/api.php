@@ -17,18 +17,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return \Illuminate\Support\Facades\Auth::user()->getAuthIdentifier();
-});
+Route::get('/user/{user}/verify', [\App\Http\Controllers\API\AuthController::class, 'verify'])->name('verify_email');
 
 Route::post('/auth/login', [\App\Http\Controllers\API\AuthController::class, 'login'])->name('login');
+
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::put('/users', [UserController::class, 'update'])->name('users.update');
+Route::get('/users', [UserController::class, 'list'])->name('users.list');
+Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
+
+
 
 
 Route::middleware('auth:sanctum')->group(function (){
-    Route::put('/users', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users', [UserController::class, 'destroy'])->name('users.destroy');
-    Route::get('/users', [UserController::class, 'list'])->name('users.list');
+    Route::get('/auth/logout', [\App\Http\Controllers\API\AuthController::class, 'logout'])->name('logout');
 
     Route::post('/users/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::post('/projects/link/users', [ProjectController::class, 'linkUsers'])->name('projects.link-users');

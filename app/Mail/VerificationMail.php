@@ -11,15 +11,19 @@ class VerificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $username;
+    public $id;
+    public $name;
+    public $verification_token;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $username)
+    public function __construct(int $id, string $name, string $verification_token)
     {
-        $this->username = $username;
+        $this->id = $id;
+        $this->name = $name;
+        $this->verification_token = $verification_token;
     }
 
     /**

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -31,8 +32,22 @@ class AuthController
         return $user->createToken($request->device_name)->plainTextToken;
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $request->user()->currentAccessToken()->delete();
 
+        return response(['status:' => 'ok']);
+    }
+
+    public function verify(User $user, Request $request)
+    {
+        if ($request->get('token') != $user->verification_token){
+            throw new Exception('Credentials are incorrect');
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        return response(['status:' => 'ok']);
     }
 }

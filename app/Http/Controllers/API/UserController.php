@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 
 
 use App\Http\Resources\UserResource;
+use App\Jobs\VerificationMail;
 use App\Models\Country;
 use App\Models\User;
 use Exception;
@@ -34,6 +35,8 @@ class UserController
             $data['password'] = Hash::make($data['password']);
             $data['verification_token'] = Str::random(45);
             $user = User::create($data);
+
+            VerificationMail::dispatch($user)->onQueue('email');
         }
 
         return response(['status:' => 'ok']);
@@ -61,9 +64,7 @@ class UserController
             $query->where('code', $request->get('country_code'));
         }
 
-        if ($query->get()->isEmpty()) {
-            throw new Exception('No such user');
-        }
+
         return new UserResource($query->get()->first());
     }
 
@@ -79,10 +80,13 @@ class UserController
                     'name'       => ['required', 'min:5'],
                     'email'      => ['required', 'unique:users,email', 'email:rfc,dns',],
                     'password'   => ['required', 'min:8',],
-                    'country_id' => ['required', 'exists:countries,id'],
+                    'country_code' => ['required', 'exists:countries,code'],
                 ]
             )->validate();
 
+            $country_id = Country::where('code', $data['country_code'])
+                ->pluck('id')->first();
+            $data['country_id'] = $country_id;
             $data['password'] = Hash::make($data['password']);
             $user->update($data);
 

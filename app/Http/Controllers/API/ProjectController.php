@@ -25,6 +25,8 @@ class ProjectController
             $user_id = Auth::user()->getAuthIdentifier();
             $data['user_id'] = $user_id;
             $project = Project::create($data);
+
+            $project->linkedUsers()->attach($user_id);
         }
 
         return response(['status:' => 'ok']);
@@ -71,11 +73,8 @@ class ProjectController
 
         }
 
-        if ($query->get()->isEmpty()) {
-            throw new Exception('No such project');
-        }
 
-        return ProjectResource::collection($query->get());
+        return ProjectResource::collection($query->distinct()->get());
     }
 
     public function destroy(Request $request)
