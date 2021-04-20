@@ -85,9 +85,7 @@ class ProjectController
 
             $project = Project::find($data);
 
-            if ($request->user()->cannot('delete', $project)) {
-                abort(403, "you can not delete this projects");
-            }
+            abort_if($request->user()->cannot('delete', $project), 403, 'you can not delete this projects');
 
             $project->delete();
         }

@@ -71,9 +71,7 @@ class LabelController
 
             $label = Label::find($data);
 
-            if ($request->user()->cannot('delete', $label)) {
-                abort(403, "you can not delete this labels");
-            }
+            abort_if($request->user()->cannot('delete', $label), 403, 'you can not delete this labels');
 
             $label->delete();
         }
