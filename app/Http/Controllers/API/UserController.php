@@ -20,15 +20,15 @@ class UserController
     {
         $requests = $request->all();
 
-        foreach ($requests as $data) {
-            $validator = Validator::make($data, [
-                    'name'         => ['required', 'min:5'],
-                    'email'        => ['required', 'unique:users,email', 'email:rfc,dns',],
-                    'password'     => ['required', 'min:8',],
-                    'country_code' => ['required', 'exists:countries,code'],
-                ]
-            )->validate();
+        $validator = Validator::make($requests, [
+                '*.name'         => ['required', 'min:5'],
+                '*.email'        => ['required', 'unique:users,email', 'email:rfc,dns',],
+                '*.password'     => ['required', 'min:8',],
+                '*.country_code' => ['required', 'exists:countries,code'],
+            ]
+        )->validate();
 
+        foreach ($requests as $data) {
             $country_id = Country::where('code', $data['country_code'])
                 ->pluck('id')->first();
             $data['country_id'] = $country_id;
@@ -72,17 +72,17 @@ class UserController
     {
         $requests = $request->all();
 
+        $validator = Validator::make($requests, [
+                '*.name'         => ['required', 'min:5'],
+                '*.email'        => ['required', 'unique:users,email', 'email:rfc,dns',],
+                '*.password'     => ['required', 'min:8',],
+                '*.country_code' => ['required', 'exists:countries,code'],
+            ]
+        )->validate();
+
         foreach ($requests as $data) {
 
             $user = User::find($data['id']);
-
-            $validator = Validator::make($data, [
-                    'name'       => ['required', 'min:5'],
-                    'email'      => ['required', 'unique:users,email', 'email:rfc,dns',],
-                    'password'   => ['required', 'min:8',],
-                    'country_code' => ['required', 'exists:countries,code'],
-                ]
-            )->validate();
 
             $country_id = Country::where('code', $data['country_code'])
                 ->pluck('id')->first();

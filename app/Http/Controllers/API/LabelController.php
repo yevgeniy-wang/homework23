@@ -17,11 +17,11 @@ class LabelController
     {
         $requests = $request->all();
 
-        foreach ($requests as $data) {
-            $validator = Validator::make($data,
-                ['name' => ['required', 'min:5']]
-            )->validate();
+        $validator = Validator::make($requests,
+            ['*.name' => ['required', 'unique:labels,name', 'min:5']]
+        )->validate();
 
+        foreach ($requests as $data) {
             $user_id = Auth::user()->getAuthIdentifier();
             $data['user_id'] = $user_id;
             $label = Label::create($data);
@@ -71,8 +71,8 @@ class LabelController
 
             $label = Label::find($data);
 
-            if ($label->user_id != auth()->id()) {
-                throw new Exception('you can not delete this projects');
+            if ($request->user()->cannot('delete', $label)) {
+                abort(403, "you can not delete this labels");
             }
 
             $label->delete();

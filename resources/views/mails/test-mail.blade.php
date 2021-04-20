@@ -18,7 +18,7 @@
 </div>
 
 <div>
-    <a class="btn btn-primary" href="http://homework23/api/user/{{ $id }}/verify?token={{ $verification_token }}" >Confirm Account</a>
+    <a class="btn btn-primary" href="{{ request()->getSchemeAndHttpHost() }}/api/user/{{ $id }}/verify?token={{ $verification_token }}" >Confirm Account</a>
 </div>
 
 <!-- Optional JavaScript; choose one of the two! -->

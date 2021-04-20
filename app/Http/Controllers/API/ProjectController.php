@@ -17,11 +17,11 @@ class ProjectController
     {
         $requests = $request->all();
 
-        foreach ($requests as $data) {
-            $validator = Validator::make($data,
-                ['name' => ['required', 'min:5']]
-            )->validate();
+        $validator = Validator::make($requests,
+            ['*.name' => ['required', 'unique:projects,name', 'min:5']]
+        )->validate();
 
+        foreach ($requests as $data) {
             $user_id = Auth::user()->getAuthIdentifier();
             $data['user_id'] = $user_id;
             $project = Project::create($data);
@@ -85,8 +85,8 @@ class ProjectController
 
             $project = Project::find($data);
 
-            if ($project->user_id != auth()->id()) {
-                throw new Exception('you can not delete this projects');
+            if ($request->user()->cannot('delete', $project)) {
+                abort(403, "you can not delete this projects");
             }
 
             $project->delete();
